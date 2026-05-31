@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>철학자 인용 카드</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__content">
+        <p class="eyebrow">Philosopher Quote Archive</p>
+        <h1>철학자의 말과 책 구절을 카드로 모아보세요</h1>
+        <p class="hero__description">
+          원문과 한글 번역, 짧은 해설, 인용 정보를 함께 저장하고 검색할 수 있는
+          한국어 철학 인용 노트입니다.
+        </p>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="panel form-panel" aria-labelledby="form-title">
+        <div class="section-heading">
+          <p class="eyebrow">Add Quote</p>
+          <h2 id="form-title">새 인용 추가</h2>
+          <p>입력한 내용은 브라우저에 저장되어 새로고침해도 유지됩니다.</p>
+        </div>
+
+        <form id="quote-form" class="quote-form">
+          <label>
+            철학자 이름
+            <input id="philosopher" name="philosopher" type="text" placeholder="예: Jacques Derrida" required />
+          </label>
+
+          <label>
+            책 제목
+            <input id="book" name="book" type="text" placeholder="예: Of Grammatology" required />
+          </label>
+
+          <label>
+            원문 인용
+            <textarea id="original" name="original" rows="3" placeholder="원문 구절을 입력하세요" required></textarea>
+          </label>
+
+          <label>
+            한글 번역
+            <textarea id="translation" name="translation" rows="3" placeholder="직접 번역한 한글 문장을 입력하세요" required></textarea>
+          </label>
+
+          <label>
+            짧은 해설
+            <textarea id="explanation" name="explanation" rows="4" placeholder="구절의 핵심 의미나 맥락을 적어주세요" required></textarea>
+          </label>
+
+          <label>
+            인용 정보
+            <textarea id="citation" name="citation" rows="3" placeholder="출판 연도, 번역자, 장/쪽수 등" required></textarea>
+          </label>
+
+          <button type="submit">Add Quote</button>
+        </form>
+      </section>
+
+      <section class="quotes-section" aria-labelledby="quotes-title">
+        <div class="quotes-toolbar">
+          <div class="section-heading">
+            <p class="eyebrow">Browse</p>
+            <h2 id="quotes-title">인용 카드</h2>
+          </div>
+
+          <label class="search-box">
+            검색 / 필터
+            <input id="search" type="search" placeholder="철학자, 책, 키워드 검색" autocomplete="off" />
+          </label>
+        </div>
+
+        <div id="quote-count" class="quote-count" aria-live="polite"></div>
+        <div id="quote-list" class="quote-grid"></div>
+        <p id="empty-state" class="empty-state" hidden>검색 결과가 없습니다. 다른 키워드를 입력해 보세요.</p>
+      </section>
+    </main>
+
+    <template id="quote-card-template">
+      <article class="quote-card">
+        <div class="quote-card__header">
+          <div>
+            <p class="quote-card__label">Philosopher</p>
+            <h3></h3>
+          </div>
+          <span class="quote-card__book"></span>
+        </div>
+
+        <blockquote class="quote-card__original"></blockquote>
+        <p class="quote-card__translation"></p>
+        <p class="quote-card__explanation"></p>
+        <p class="quote-card__citation"></p>
+      </article>
+    </template>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
