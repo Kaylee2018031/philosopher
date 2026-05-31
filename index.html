@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Philosopher Quotes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero__content">
+          <p class="eyebrow">Daily philosophical reflection</p>
+          <h1 id="page-title">Collect, compare, and revisit timeless quotes.</h1>
+          <p class="hero__copy">
+            Add your own favorite line, keep several thinkers in view, and use
+            the cards below as a lightweight prompt for deeper reading.
+          </p>
+        </div>
+        <form class="quote-form" id="quote-form" aria-label="Add a quote card">
+          <h2>Add a quote</h2>
+          <label for="quote-text">Quote</label>
+          <textarea
+            id="quote-text"
+            name="quote"
+            rows="4"
+            placeholder="The unexamined life is not worth living."
+            required
+          ></textarea>
+
+          <div class="form-grid">
+            <div>
+              <label for="quote-author">Philosopher</label>
+              <input
+                id="quote-author"
+                name="author"
+                type="text"
+                placeholder="Socrates"
+                required
+              />
+            </div>
+            <div>
+              <label for="quote-theme">Theme</label>
+              <input
+                id="quote-theme"
+                name="theme"
+                type="text"
+                placeholder="Self-knowledge"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit">Create quote card</button>
+          <p class="form-hint" id="form-hint" aria-live="polite">
+            New cards appear at the top of the collection.
+          </p>
+        </form>
+      </section>
+
+      <section class="quote-section" aria-labelledby="collection-title">
+        <div class="section-heading">
+          <p class="eyebrow">Quote collection</p>
+          <h2 id="collection-title">Featured philosophers</h2>
+        </div>
+        <div class="quote-grid" id="quote-grid" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <template id="quote-card-template">
+      <article class="quote-card">
+        <div class="quote-card__theme"></div>
+        <blockquote></blockquote>
+        <footer>
+          <span class="quote-card__author"></span>
+          <button class="quote-card__remove" type="button">Remove</button>
+        </footer>
+      </article>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
