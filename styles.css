@@ -164,6 +164,14 @@ button:focus-visible {
   transform: translateY(-1px);
 }
 
+.form-feedback {
+  min-height: 1.5em;
+  margin: 16px 0 0;
+  color: var(--accent-dark);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
 .quotes-section {
   min-width: 0;
 }
@@ -178,6 +186,29 @@ button:focus-visible {
 
 .search-box {
   color: var(--accent-dark);
+}
+
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.filter-tab {
+  border: 1px solid var(--line);
+  background: rgba(255, 250, 242, 0.72);
+  color: var(--accent-dark);
+  padding: 9px 14px;
+  font-size: 0.9rem;
+}
+
+.filter-tab:hover,
+.filter-tab:focus-visible,
+.filter-tab.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fffaf5;
 }
 
 .quote-count {
@@ -223,15 +254,40 @@ button:focus-visible {
   letter-spacing: -0.03em;
 }
 
-.quote-card__book {
+.quote-card__badges {
+  display: flex;
   flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.quote-card__book,
+.quote-card__source {
   border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent-dark);
   padding: 6px 10px;
   font-size: 0.78rem;
   font-weight: 900;
   text-align: right;
+}
+
+.quote-card__book {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.quote-card__source {
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--muted);
+}
+
+.quote-card[data-source="user"] {
+  border-color: rgba(123, 63, 47, 0.36);
+}
+
+.quote-card[data-source="user"] .quote-card__source {
+  background: var(--accent);
+  color: #fffaf5;
 }
 
 .quote-card__original {
@@ -300,8 +356,12 @@ button:focus-visible {
     display: grid;
   }
 
-  .quote-card__book {
-    justify-self: start;
+  .quote-card__badges {
+    justify-content: flex-start;
+  }
+
+  .quote-card__book,
+  .quote-card__source {
     text-align: left;
   }
 }

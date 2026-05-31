@@ -1,7 +1,10 @@
-const STORAGE_KEY = "philosopher-quotes";
+const STORAGE_KEY = "philosopher-user-quotes";
+const LEGACY_STORAGE_KEY = "philosopher-quotes";
 
 const sampleQuotes = [
   {
+    id: "sample-derrida",
+    source: "sample",
     philosopher: "Jacques Derrida",
     book: "Of Grammatology",
     original: "There is nothing outside of the text.",
@@ -11,6 +14,8 @@ const sampleQuotes = [
     citation: "프랑스어 원문: 『De la grammatologie』(1967). 영어 번역: Gayatri Chakravorty Spivak, 1976.",
   },
   {
+    id: "sample-foucault",
+    source: "sample",
     philosopher: "Michel Foucault",
     book: "The History of Sexuality, Volume 1",
     original: "Where there is power, there is resistance.",
@@ -20,6 +25,8 @@ const sampleQuotes = [
     citation: "프랑스어 초판 1976년. 영어 번역: Robert Hurley, 1978.",
   },
   {
+    id: "sample-arendt",
+    source: "sample",
     philosopher: "Hannah Arendt",
     book: "The Human Condition",
     original: "Men, not Man, live on the earth and inhabit the world.",
@@ -29,6 +36,8 @@ const sampleQuotes = [
     citation: "초판 1958년, University of Chicago Press.",
   },
   {
+    id: "sample-weil",
+    source: "sample",
     philosopher: "Simone Weil",
     book: "Waiting for God",
     original: "Attention is the rarest and purest form of generosity.",
@@ -45,14 +54,19 @@ const quoteTemplate = document.querySelector("#quote-card-template");
 const searchInput = document.querySelector("#search");
 const quoteCount = document.querySelector("#quote-count");
 const emptyState = document.querySelector("#empty-state");
+const formFeedback = document.querySelector("#form-feedback");
+const filterTabs = document.querySelectorAll(".filter-tab");
 
-let quotes = loadQuotes();
+let userQuotes = loadUserQuotes();
+let activeFilter = "all";
 
 quoteForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
   const formData = new FormData(quoteForm);
   const quote = {
+    id: createQuoteId(),
+    source: "user",
     philosopher: formData.get("philosopher").trim(),
     book: formData.get("book").trim(),
     original: formData.get("original").trim(),
@@ -61,49 +75,119 @@ quoteForm.addEventListener("submit", (event) => {
     citation: formData.get("citation").trim(),
   };
 
-  quotes = [quote, ...quotes];
-  saveQuotes(quotes);
+  userQuotes = [quote, ...userQuotes];
+  saveUserQuotes(userQuotes);
   quoteForm.reset();
   searchInput.value = "";
+  setActiveFilter("all");
+  formFeedback.textContent = `“${quote.philosopher}” 카드가 추가되었습니다. 계속 입력해 여러 카드를 만들 수 있습니다.`;
   renderQuotes();
 });
 
 searchInput.addEventListener("input", renderQuotes);
 
+filterTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    setActiveFilter(tab.dataset.filter);
+    renderQuotes();
+  });
+});
+
+setActiveFilter(activeFilter);
 renderQuotes();
 
-function loadQuotes() {
+function loadUserQuotes() {
   const storedQuotes = localStorage.getItem(STORAGE_KEY);
+  const legacyQuotes = localStorage.getItem(LEGACY_STORAGE_KEY);
+  const rawQuotes = storedQuotes || legacyQuotes;
 
-  if (!storedQuotes) {
-    return sampleQuotes;
+  if (!rawQuotes) {
+    return [];
   }
 
   try {
-    const parsedQuotes = JSON.parse(storedQuotes);
-    return Array.isArray(parsedQuotes) ? parsedQuotes : sampleQuotes;
+    const parsedQuotes = JSON.parse(rawQuotes);
+    const normalizedQuotes = Array.isArray(parsedQuotes) ? parsedQuotes.filter(isUserQuote).map(normalizeUserQuote) : [];
+
+    if (!storedQuotes && normalizedQuotes.length > 0) {
+      saveUserQuotes(normalizedQuotes);
+    }
+
+    return normalizedQuotes;
   } catch {
-    return sampleQuotes;
+    return [];
   }
 }
 
-function saveQuotes(nextQuotes) {
+function isUserQuote(quote) {
+  const matchesSample = sampleQuotes.some(
+    (sampleQuote) =>
+      sampleQuote.philosopher === quote.philosopher &&
+      sampleQuote.book === quote.book &&
+      sampleQuote.original === quote.original,
+  );
+
+  return quote.source !== "sample" && !String(quote.id || "").startsWith("sample-") && !matchesSample;
+}
+
+function normalizeUserQuote(quote) {
+  return {
+    id: quote.id || createQuoteId(),
+    source: "user",
+    philosopher: quote.philosopher || "",
+    book: quote.book || "",
+    original: quote.original || "",
+    translation: quote.translation || "",
+    explanation: quote.explanation || "",
+    citation: quote.citation || "",
+  };
+}
+
+function saveUserQuotes(nextQuotes) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(nextQuotes));
+}
+
+function createQuoteId() {
+  if (crypto.randomUUID) {
+    return `user-${crypto.randomUUID()}`;
+  }
+
+  return `user-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function setActiveFilter(nextFilter) {
+  activeFilter = nextFilter;
+
+  filterTabs.forEach((tab) => {
+    const isActive = tab.dataset.filter === activeFilter;
+    tab.classList.toggle("is-active", isActive);
+    tab.setAttribute("aria-pressed", String(isActive));
+  });
+}
+
+function getAllQuotes() {
+  return [...userQuotes, ...sampleQuotes];
 }
 
 function renderQuotes() {
   const keyword = searchInput.value.trim().toLowerCase();
-  const filteredQuotes = quotes.filter((quote) =>
-    Object.values(quote).some((value) => value.toLowerCase().includes(keyword)),
-  );
+  const allQuotes = getAllQuotes();
+  const filteredQuotes = allQuotes.filter((quote) => {
+    const matchesFilter = activeFilter === "all" || quote.source === activeFilter;
+    const matchesKeyword = Object.values(quote).some((value) => String(value).toLowerCase().includes(keyword));
+
+    return matchesFilter && matchesKeyword;
+  });
 
   quoteList.replaceChildren();
 
   filteredQuotes.forEach((quote) => {
     const card = quoteTemplate.content.firstElementChild.cloneNode(true);
 
+    card.dataset.source = quote.source;
     card.querySelector("h3").textContent = quote.philosopher;
     card.querySelector(".quote-card__book").textContent = quote.book;
+    card.querySelector(".quote-card__source").textContent = quote.source === "user" ? "내 카드" : "샘플";
     card.querySelector(".quote-card__original").textContent = `“${quote.original}”`;
     card.querySelector(".quote-card__translation").textContent = quote.translation;
     card.querySelector(".quote-card__explanation").textContent = quote.explanation;
@@ -112,6 +196,7 @@ function renderQuotes() {
     quoteList.append(card);
   });
 
-  quoteCount.textContent = `${filteredQuotes.length}개의 인용 카드가 표시됩니다.`;
+  const filterLabel = activeFilter === "sample" ? "샘플" : activeFilter === "user" ? "내가 추가한" : "전체";
+  quoteCount.textContent = `${filterLabel} 인용 카드 ${filteredQuotes.length}개가 표시됩니다. 저장된 내 카드: ${userQuotes.length}개.`;
   emptyState.hidden = filteredQuotes.length > 0;
 }

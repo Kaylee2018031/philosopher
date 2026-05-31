@@ -59,6 +59,8 @@
 
           <button type="submit">Add Quote</button>
         </form>
+
+        <p id="form-feedback" class="form-feedback" aria-live="polite"></p>
       </section>
 
       <section class="quotes-section" aria-labelledby="quotes-title">
@@ -74,6 +76,12 @@
           </label>
         </div>
 
+        <div class="filter-tabs" aria-label="카드 유형 필터">
+          <button class="filter-tab is-active" type="button" data-filter="all">전체</button>
+          <button class="filter-tab" type="button" data-filter="sample">샘플</button>
+          <button class="filter-tab" type="button" data-filter="user">내가 추가한 카드</button>
+        </div>
+
         <div id="quote-count" class="quote-count" aria-live="polite"></div>
         <div id="quote-list" class="quote-grid"></div>
         <p id="empty-state" class="empty-state" hidden>검색 결과가 없습니다. 다른 키워드를 입력해 보세요.</p>
@@ -87,7 +95,10 @@
             <p class="quote-card__label">Philosopher</p>
             <h3></h3>
           </div>
-          <span class="quote-card__book"></span>
+          <div class="quote-card__badges">
+            <span class="quote-card__book"></span>
+            <span class="quote-card__source"></span>
+          </div>
         </div>
 
         <blockquote class="quote-card__original"></blockquote>
